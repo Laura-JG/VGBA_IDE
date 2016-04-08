@@ -1,0 +1,9 @@
+#!/bin/bash
+export PATH=$PATH+":/opt/devkitpro/devkitARM/bin/"
+export DEVKITARM=/opt/devkitpro/devkitARM
+export DEVKITPRO=/opt/devkitpro
+make clean && make
+
+if [ "$1" == "run" ]; then
+gvba *.gba
+fi
