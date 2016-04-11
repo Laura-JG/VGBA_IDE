@@ -36,7 +36,7 @@ public class Browser {
 			        fileTree.setSelectionRow(row);
 			        File fft = getFileFromTree();
 			        // If source isn't selected, don't show new file option
-			        if (!(fft.getName().equals("source"))) {
+			        if (!(fft.getName().equals("source")) && !(fft.getName().equals("include"))) { //TODO
 			        		for (Component child: mainWin.popupMenu.getComponents())
 			        		{
 			        				if (((JMenuItem)child).getText()=="New..."){
@@ -48,21 +48,42 @@ public class Browser {
 			        					
 			        				}
 			        		}
-			        } else { // If source is selected, show all possible options
+			        } 
+			        else { // If source is selected, show all possible options
+			        	
 			        	for (Component child: mainWin.popupMenu.getComponents())
 		        		{
 		        				if (((JMenuItem)child).getText()=="New..."){
 		        					for(Component leaf : ((JMenu)child).getPopupMenu().getComponents()){
 		        						if (((JMenuItem)leaf).getText()=="File..."){
 		        							leaf.setEnabled(true);
+		        							for(Component leaf2 : ((JMenu)leaf).getPopupMenu().getComponents()){
+		        								if (((JMenuItem)leaf2).getText().equals(".H File") && fft.getName().equals("include")){
+		        									leaf2.setEnabled(true);
+		        								}
+		        								if (((JMenuItem)leaf2).getText().equals(".C File") && fft.getName().equals("include")){
+		        									leaf2.setEnabled(false);
+		        								}
+		        								if (((JMenuItem)leaf2).getText().equals(".S File") && fft.getName().equals("include")){
+		        									leaf2.setEnabled(false);
+		        								}
+		        								if (((JMenuItem)leaf2).getText().equals(".H File") && fft.getName().equals("source")){
+		        									leaf2.setEnabled(false);
+		        								}
+		        								if (((JMenuItem)leaf2).getText().equals(".C File") && fft.getName().equals("source")){
+		        									leaf2.setEnabled(true);
+		        								}
+		        								if (((JMenuItem)leaf2).getText().equals(".S File") && fft.getName().equals("source")){
+		        									leaf2.setEnabled(true);
+		        								}
+		        							
+		        							}
 		        						}
 		        					}
-		        					
 		        				}
-		        			
-		        		}
-			        }
-			        mainWin.popupMenu.show(e.getComponent(), e.getX(), e.getY());
+		        			}
+			        	}
+			    mainWin.popupMenu.show(e.getComponent(), e.getX(), e.getY());
 				} // Double click on tree handler
 				else if (e.getClickCount()==2)
 				{	

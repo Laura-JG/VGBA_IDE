@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
@@ -13,9 +14,11 @@ import javax.swing.border.SoftBevelBorder;
 public class Console {
 	
 	protected JTextArea textArea;
+	protected MainWin mainWin;
 	
 	public Console(MainWin mainWin)
 	{
+		this.mainWin = mainWin;
 		this.textArea = new JTextArea();
 		textArea.setEditable(false);
 		textArea.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -27,6 +30,13 @@ public class Console {
 	}
 	
 	public void compile(String path, boolean dowehavetorun){
+		if (this.mainWin.editor.getTextState()){
+			JOptionPane JOP = new JOptionPane();
+			 int reply = JOP.showConfirmDialog(null, "Save file?", "UNSAVED CHANGES", JOptionPane.YES_NO_OPTION);
+			if (reply == JOptionPane.YES_OPTION) {
+				mainWin.editor.saveFile();
+			}				
+		}
 		this.textArea.setText(null);
         String line;
 		String command = "./compile";

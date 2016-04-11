@@ -141,7 +141,7 @@ public class MainWin extends JFrame {
 				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				newFile.setVisible(true);
 		        }else{
-		        	new MessageBox("New files must be placed in \"source\" folder.", "info");
+		        	new MessageBox("New .c files must be placed in \"source\" folder.", "info");
 		        }  
 			}
 		});
@@ -158,11 +158,27 @@ public class MainWin extends JFrame {
 				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				newFile.setVisible(true);
 		        } else {
-		        	new MessageBox("New files must be placed in \"source\" folder.", "info");
+		        	new MessageBox("New .s files must be placed in \"source\" folder.", "info");
 		        }
 			}
 		});
 		mnNewMenu_2.add(mntmsFile);
+		
+		JMenuItem mntmhFile = new JMenuItem(".H File", 0);
+		mntmhFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.ALT_MASK));
+		mntmhFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				File fft = browser.getFileFromTree();
+		        if (fft.getName().equals("include")) {
+				newFile.ext = "h";
+				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				newFile.setVisible(true);
+		        } else {
+		        	new MessageBox("New .h files must be placed in \"include\" folder.", "info");
+		        }
+			}
+		});
+		mnNewMenu_2.add(mntmhFile);
 		
 		// Nouveau projet
 		JMenuItem mntmProject = new JMenuItem("Project");
@@ -194,7 +210,7 @@ public class MainWin extends JFrame {
 				if (editor.opened == null) {
 					new MessageBox("Please open the file in \"source\" folder that you want to compile and run", "error");
 				}
-				// Fait un make
+				// si ca s'est pas un makefile
 				try {
 				if (!editor.opened.getName().equals("Makefile")) {
 					console.compile(editor.opened.getParentFile().getParent(), false);
@@ -285,6 +301,16 @@ public class MainWin extends JFrame {
 			}
 		});
 		mnFile_1.add(mntmcFile_1);
+		
+		JMenuItem mntmcFile_3 = new JMenuItem(".H File");
+		mntmcFile_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				newFile.ext = "h";
+				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				newFile.setVisible(true);
+			}
+		});
+		mnFile_1.add(mntmcFile_3);
 		
 		JMenuItem mntmsFile_1 = new JMenuItem(".S File");
 		mntmsFile_1.addActionListener(new ActionListener() {
