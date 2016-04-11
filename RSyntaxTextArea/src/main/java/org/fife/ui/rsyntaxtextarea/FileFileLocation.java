@@ -22,7 +22,7 @@ import java.io.OutputStream;
  * @author Robert Futrell
  * @version 1.0
  */
-class FileFileLocation extends FileLocation {
+public class FileFileLocation extends FileLocation {
 
 	/**
 	 * The file.  This may or may not actually exist.

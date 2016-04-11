@@ -7,14 +7,12 @@ public class DeleteDirectory
     public DeleteDirectory(File file) {
     	if(!file.exists()){
     		new MessageBox("\""+file.toString()+"\" does not exist.", "info");
-            System.exit(0);
          }else{
             try{
                 delete(file);
             }catch(IOException e){
             	new MessageBox("\""+file.toString()+"\" couldn't be deleted.", "error");
                 e.printStackTrace();
-                System.exit(0);
             }
          }
     }
