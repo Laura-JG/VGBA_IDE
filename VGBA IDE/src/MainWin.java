@@ -1,39 +1,45 @@
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import javax.swing.JMenuBar;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+
 import javax.swing.JDialog;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
-
-import java.awt.Dimension;
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SpringLayout;
 
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import com.sun.xml.internal.ws.api.Component;
+import com.sun.xml.internal.ws.api.server.Container;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
-
-@SuppressWarnings("serial")
-public class MainWin extends JFrame {
-
+public class MainWin{
+	
+	protected float factx;
+	protected float facty;
+	protected int width;
+	protected int heigth;
 	protected JPanel contentPane;
 	protected JPopupMenu popupMenu;
 	protected Ws_creator wsCreator;
@@ -44,33 +50,30 @@ public class MainWin extends JFrame {
 	protected Console console;
 	protected NewPj newPj;
 	protected NewFile newFile;
-	protected JLabel label;
-	protected float factx;
-	protected float facty;
+	protected JLabel label,browserLabel;
 	protected String es;
-	protected int width;
-	protected int heigth;
+	protected JFrame frame;
+	protected RTextScrollPane textScrollPane;
+	protected JScrollPane scrollPane;
+	protected JScrollPane scrollPane_1;
 	
-	/**
-	 * Create the frame.
-	 * @throws IOException 
-	 */
-	public MainWin(boolean check, String inst_path) throws IOException {
+	public MainWin(boolean check,String inst_path) throws IOException{
+
 		// Creation du workspace si c'est la premiere execution; sinon lecture du fichier
 		this.inst_path = inst_path;
 		this.wsCreator = new Ws_creator(this);
-		if ( !check ) {
+		if (!check) {
 			this.pathFromFile = this.wsCreator.getWsPath();
 			this.wsCreator.createWs(this.pathFromFile, inst_path);
 		} else {
 			InputStream extracteur = new FileInputStream(inst_path + File.separator + "settings.cfg");
 			InputStreamReader isr = new InputStreamReader(extracteur, Charset.forName("UTF-8"));
-		    BufferedReader br = new BufferedReader(isr);
-		    String line;
-		    while ((line = br.readLine()) != null) {
-		        this.pathFromFile = new File(line);
-		    }
-		    br.close();
+			BufferedReader br = new BufferedReader(isr);
+			String line;
+			while ((line = br.readLine()) != null) {
+				this.pathFromFile = new File(line);
+			}
+			br.close();
 		}
 		// Verification du cas ou le dossier n existe plus
 		if (!pathFromFile.exists()) {
@@ -79,58 +82,124 @@ public class MainWin extends JFrame {
 			this.wsCreator.createWs(this.pathFromFile, inst_path);
 		}
 		
-		// Fenetre principale
-		setTitle("VGBA IDE");
-		setResizable(true);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//MAIN FRAME
+		this.frame = new JFrame("VGBA_IDE");
+		JPanel contentPane = new JPanel();
+		
+		frame.getContentPane().add(contentPane);
+		SpringLayout sl_contentPane = new SpringLayout();
+		contentPane.setLayout(sl_contentPane);
+			//LABELS
+		JLabel lblconsole = new JLabel("Console:");
+		this.label = new JLabel("");
+		this.browserLabel = new JLabel("");
+		JLabel lblNewLabel = new JLabel("A");
+		lblNewLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				float size = Math.min(editor.syntaxTextArea.getFont().getSize2D()+1, 30);
+				editor.syntaxTextArea.setFont(editor.syntaxTextArea.getFont().deriveFont(size));
+			}
+		});
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		//lblNewLabel.setBounds((int)(982*factx), (int)(10*facty), (int)(11*factx), (int)(14*facty));
+		
+		
+		JLabel lblNewLabel_1 = new JLabel("A");
+		lblNewLabel_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				float size = Math.max(editor.syntaxTextArea.getFont().getSize2D()-1, 10);
+				editor.syntaxTextArea.setFont(editor.syntaxTextArea.getFont().deriveFont(size));
+			}
+		});
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		//lblNewLabel_1.setBounds((int)(956*factx), (int)(10*facty), (int)(11*factx), (int)(14*facty));
+		//---LABELS---
+		
+		//Containers
+		this.scrollPane = new JScrollPane();
+		this.scrollPane_1 = new JScrollPane();
+		this.textScrollPane = new RTextScrollPane();
+		//-------------
+		this.popupMenu = new JPopupMenu();
+		addPopup(this.scrollPane, this.popupMenu);
+		//Variable Screen Size
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.width = (int)screenSize.getWidth();
 		this.factx = width/1024.f;
 		this.heigth = (int)screenSize.getHeight();
 		this.facty = heigth/768.f;
-		setBounds(0, 0, width, heigth);
+		this.frame.setBounds(0, 0, width, heigth);
+		//-----------
 		
-		// Contenu du scollpane principal, contient tous les composants
-		contentPane = new JPanel();
-		contentPane.setPreferredSize(new Dimension(width - 20, heigth - 80));
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(null);
-
-		// Le scrollpane contient le contentPane, conteneur de tous les composants
-		JScrollPane sP = new JScrollPane(contentPane);
-		//sP.setBounds(0, 0, width, heigth);
-		sP.setPreferredSize(new Dimension(width - 5, heigth - 5));
-		sP.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		sP.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		//sP.setVisible(true);
-		//contentPane.add(sP);
-		setContentPane(sP);
-		sP.setViewportView(contentPane);
 		
-		// Sous-fenetres
+		
+		//Cointainers Properties
+		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane, 30, SpringLayout.NORTH, contentPane); //top browser
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane, (int)facty*-170, SpringLayout.SOUTH, contentPane); //bottom Browser
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, contentPane); //left browser
+		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane, (int)factx*200, SpringLayout.WEST, contentPane);	//right browser
+		sl_contentPane.putConstraint(SpringLayout.WEST, this.browserLabel, 0, SpringLayout.WEST, scrollPane);	//left WSName Label
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.browserLabel, -5, SpringLayout.NORTH, scrollPane); //bot WSName Label
+		
+		sl_contentPane.putConstraint(SpringLayout.NORTH, lblconsole, 5, SpringLayout.SOUTH, scrollPane); //top lblconsole
+		sl_contentPane.putConstraint(SpringLayout.WEST, lblconsole, 10, SpringLayout.WEST, contentPane); //left lblconsole
+		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane_1, 5, SpringLayout.SOUTH, lblconsole); //top Console
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane_1, -10, SpringLayout.SOUTH, contentPane); //bottom console
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane_1, 10, SpringLayout.WEST, contentPane); //left console
+		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane_1, -10, SpringLayout.EAST, contentPane); //right console
+		
+		sl_contentPane.putConstraint(SpringLayout.NORTH, textScrollPane, 30, SpringLayout.NORTH, contentPane);	//top editor
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, textScrollPane, -5, SpringLayout.NORTH, lblconsole);	//bot editor
+		sl_contentPane.putConstraint(SpringLayout.WEST, textScrollPane, 10, SpringLayout.EAST, scrollPane);	//left editor
+		sl_contentPane.putConstraint(SpringLayout.EAST, textScrollPane, -10, SpringLayout.EAST, contentPane); //right editor
+		sl_contentPane.putConstraint(SpringLayout.WEST, this.label, 0, SpringLayout.WEST, textScrollPane);	//left FileName Label
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.label, -5, SpringLayout.NORTH, textScrollPane); //bot FileName Label
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblNewLabel, 0, SpringLayout.EAST, textScrollPane);	//right +TextSize Label
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblNewLabel, -5, SpringLayout.NORTH, textScrollPane); //bot +TextSize Label
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblNewLabel_1, -30, SpringLayout.WEST, lblNewLabel);	//right -TextSize Label
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblNewLabel_1, -5, SpringLayout.NORTH, textScrollPane); //bot -TextSize Label
+		
+		//------------
+		
+		//CreatingObjects
+		makeMenu();
 		this.editor = new Editor(this);
 		this.console = new Console(this);
-		makeMenu();
 		this.browser = new Browser(this);
 		this.newPj = new NewPj(this);
 		this.newFile = new NewFile(this);
+		//-------------------
+
+		//Adding Containers
+		contentPane.add(scrollPane);
+		contentPane.add(scrollPane_1);
+		contentPane.add(textScrollPane);
+		contentPane.add(this.label);
+		contentPane.add(this.browserLabel);
+		contentPane.add(lblconsole);
+		contentPane.add(lblNewLabel);
+		contentPane.add(lblNewLabel_1);
+		//------------
 		
-		this.setVisible(true);
+		frame.setVisible(true);
+		//------MAIN FRAME---------------
 	}
-	
-	// Menu barre du haut
+
 	public void makeMenu() {
+		//MENUBAR
 		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
+		frame.setJMenuBar(menuBar);
 		
-		JMenu mnNewMenu = new JMenu("File");
-		menuBar.add(mnNewMenu);
+		JMenu mnFile = new JMenu("File");
+		menuBar.add(mnFile);
 		
-		JMenu mnNewProject = new JMenu("New");
-		mnNewMenu.add(mnNewProject);
+		JMenu mnNew = new JMenu("New");
+		mnFile.add(mnNew);
 		
-		JMenu mnNewMenu_2 = new JMenu("File");
-		mnNewProject.add(mnNewMenu_2);
+		JMenu mnFile_1 = new JMenu("File");
+		mnNew.add(mnFile_1);
 		
 		JMenuItem mntmcFile = new JMenuItem(".C File");
 		mntmcFile.addActionListener(new ActionListener() {
@@ -146,9 +215,9 @@ public class MainWin extends JFrame {
 			}
 		});
 		mntmcFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK));
-		mnNewMenu_2.add(mntmcFile);
+		mnFile_1.add(mntmcFile);
 		
-		JMenuItem mntmsFile = new JMenuItem(".S File", 0);
+		JMenuItem mntmsFile = new JMenuItem(".S File");
 		mntmsFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_MASK));
 		mntmsFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -162,9 +231,9 @@ public class MainWin extends JFrame {
 		        }
 			}
 		});
-		mnNewMenu_2.add(mntmsFile);
+		mnFile_1.add(mntmsFile);
 		
-		JMenuItem mntmhFile = new JMenuItem(".H File", 0);
+		JMenuItem mntmhFile = new JMenuItem(".H File");
 		mntmhFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.ALT_MASK));
 		mntmhFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -178,9 +247,8 @@ public class MainWin extends JFrame {
 		        }
 			}
 		});
-		mnNewMenu_2.add(mntmhFile);
+		mnFile_1.add(mntmhFile);
 		
-		// Nouveau projet
 		JMenuItem mntmProject = new JMenuItem("Project");
 		mntmProject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -189,7 +257,7 @@ public class MainWin extends JFrame {
 			}
 		});
 		mntmProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
-		mnNewProject.add(mntmProject);
+		mnNew.add(mntmProject);
 		
 		JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.addActionListener(new ActionListener() {
@@ -198,10 +266,10 @@ public class MainWin extends JFrame {
 			}
 		});
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-		mnNewMenu.add(mntmSave);
+		mnFile.add(mntmSave);
 		
-		JMenu mnCompile = new JMenu("Compile");
-		mnNewMenu.add(mnCompile);
+		JMenu mnCompile_1 = new JMenu("Compile");
+		mnFile.add(mnCompile_1);
 		
 		JMenuItem mntmCompile = new JMenuItem("Compile");
 		mntmCompile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
@@ -210,7 +278,7 @@ public class MainWin extends JFrame {
 				if (editor.opened == null) {
 					new MessageBox("Please open the file in \"source\" folder that you want to compile and run", "error");
 				}
-				// si ca s'est pas un makefile
+				// if this is not a makefile
 				try {
 				if (!editor.opened.getName().equals("Makefile")) {
 					console.compile(editor.opened.getParentFile().getParent(), false);
@@ -222,11 +290,11 @@ public class MainWin extends JFrame {
 				}
 			}
 		});
-		mnCompile.add(mntmCompile);
+		mnCompile_1.add(mntmCompile);
 		
-		JMenuItem mntmCompileAndRun = new JMenuItem("Compile and Run");
-		mntmCompileAndRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0));
-		mntmCompileAndRun.addActionListener(new ActionListener() {
+		JMenuItem mntmCompileRun = new JMenuItem("Compile & Run");
+		mntmCompileRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0));
+		mntmCompileRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (editor.opened == null) {
 					new MessageBox("Please open the file in \"source\" folder that you want to compile and run", "error");
@@ -239,10 +307,12 @@ public class MainWin extends JFrame {
 				}
 			}
 		});
-		mnCompile.add(mntmCompileAndRun);
+		mnCompile_1.add(mntmCompileRun);
 		
-		JMenu mnNewMenu_1 = new JMenu("Edit");
-		menuBar.add(mnNewMenu_1);
+		
+		//Edit Menu
+		JMenu mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
 		
 		JMenuItem mntmClearConsole = new JMenuItem("Clear Console");
 		mntmClearConsole.addActionListener(new ActionListener() {
@@ -250,28 +320,27 @@ public class MainWin extends JFrame {
 				console.clearC();
 			}
 		});
-		mnNewMenu_1.add(mntmClearConsole);
+		mnEdit.add(mntmClearConsole);
 		
-		JMenuItem mntmref = new JMenuItem("Refresh browser");
-		mntmref.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
-		mntmref.addActionListener(new ActionListener() {
+		JMenuItem mntmRefreshBrowser = new JMenuItem("Refresh Browser");
+		mntmRefreshBrowser.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
+		mntmRefreshBrowser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				refreshBrowser();
 			}
 		});
-		mnNewMenu_1.add(mntmref);
+		mnEdit.add(mntmRefreshBrowser);
 		
-		// Change workspace
-		JMenuItem mntmChangeWorkspace = new JMenuItem("Change WorkSpace");
+		JMenuItem mntmChangeWorkspace = new JMenuItem("Change Workspace");
 		mntmChangeWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rebuildWorkspace();
 			}
 		});
-		mnNewMenu_1.add(mntmChangeWorkspace);
-		
-		JMenu mnNewMenu_3 = new JMenu("Info");
-		menuBar.add(mnNewMenu_3);
+		mnEdit.add(mntmChangeWorkspace);
+		//Info Menu
+		JMenu mnCompile = new JMenu("Info");
+		menuBar.add(mnCompile);
 		
 		JMenuItem mntmCredits = new JMenuItem("Credits");
 		mntmCredits.addActionListener(new ActionListener() {
@@ -279,18 +348,15 @@ public class MainWin extends JFrame {
 				new Credits(width, heigth, inst_path);
 			}
 		});
-		mnNewMenu_3.add(mntmCredits);
+		mnCompile.add(mntmCredits);
+		//---MENUBAR---
 		
-		// Popup menu du browser (ouvert avec click droit)
-		JPopupMenu popupMenu = new JPopupMenu();
-		contentPane.add(popupMenu);
-		this.popupMenu=popupMenu;
+		//POPUPMENU
+		JMenu mnNew1 = new JMenu("New...");
+		popupMenu.add(mnNew1);
 		
-		JMenu mnNew = new JMenu("New...");
-		popupMenu.add(mnNew);
-		
-		JMenu mnFile_1 = new JMenu("File...");
-		mnNew.add(mnFile_1);
+		JMenu mnFile_11 = new JMenu("File...");
+		mnNew1.add(mnFile_11);
 		
 		JMenuItem mntmcFile_1 = new JMenuItem(".C File");
 		mntmcFile_1.addActionListener(new ActionListener() {
@@ -300,7 +366,7 @@ public class MainWin extends JFrame {
 				newFile.setVisible(true);
 			}
 		});
-		mnFile_1.add(mntmcFile_1);
+		mnFile_11.add(mntmcFile_1);
 		
 		JMenuItem mntmcFile_3 = new JMenuItem(".H File");
 		mntmcFile_3.addActionListener(new ActionListener() {
@@ -310,7 +376,7 @@ public class MainWin extends JFrame {
 				newFile.setVisible(true);
 			}
 		});
-		mnFile_1.add(mntmcFile_3);
+		mnFile_11.add(mntmcFile_3);
 		
 		JMenuItem mntmsFile_1 = new JMenuItem(".S File");
 		mntmsFile_1.addActionListener(new ActionListener() {
@@ -320,7 +386,7 @@ public class MainWin extends JFrame {
 				newFile.setVisible(true);
 			}
 		});
-		mnFile_1.add(mntmsFile_1);
+		mnFile_11.add(mntmsFile_1);
 		
 		JMenuItem mntmProject_1 = new JMenuItem("Project");
 		mntmProject_1.addActionListener(new ActionListener() {
@@ -329,7 +395,7 @@ public class MainWin extends JFrame {
 				newPj.setVisible(true);
 			}
 		});
-		mnNew.add(mntmProject_1);
+		mnNew1.add(mntmProject_1);
 		
 		JMenuItem mntmDelete = new JMenuItem("Delete");
 		mntmDelete.addActionListener(new ActionListener() {
@@ -346,40 +412,9 @@ public class MainWin extends JFrame {
 			}
 		});
 		popupMenu.add(mntmDelete);
-		
-		this.label = new JLabel("");
-		label.setBounds((int)(factx*170), (int)(facty*15), (int)(factx*478), (int)(facty*14));
-		contentPane.add(label);
-		
-		JLabel lblConsole = new JLabel("Console:");
-		lblConsole.setBounds((int)(factx*10), (int)(facty*521), (int)(factx*100), (int)(facty*14));
-		contentPane.add(lblConsole);
-		
-		JLabel lblNewLabel = new JLabel("A");
-		lblNewLabel.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				float size = Math.min(editor.syntaxTextArea.getFont().getSize2D()+1, 30);
-				editor.syntaxTextArea.setFont(getFont().deriveFont(size));
-			}
-		});
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblNewLabel.setBounds((int)(982*factx), (int)(10*facty), (int)(11*factx), (int)(14*facty));
-		contentPane.add(lblNewLabel);
-		
-		JLabel lblNewLabel_1 = new JLabel("A");
-		lblNewLabel_1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				float size = Math.max(editor.syntaxTextArea.getFont().getSize2D()-1, 10);
-				editor.syntaxTextArea.setFont(getFont().deriveFont(size));
-			}
-		});
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		lblNewLabel_1.setBounds((int)(956*factx), (int)(10*facty), (int)(11*factx), (int)(14*facty));
-		contentPane.add(lblNewLabel_1);
+		//---POPUPMENU
 	}
-	
+
 	// Mis a jour du workspace et de l interface
 	public void rebuildWorkspace() {
 		this.pathFromFile = this.wsCreator.getWsPath();
@@ -387,16 +422,31 @@ public class MainWin extends JFrame {
 		this.editor.refresh();
 		this.refreshBrowser();
 	}
-	
 	// Mise a jour de la gueule du browser
 	public void refreshBrowser() {
 		TreeState ts = new TreeState(this.browser.fileTree);
-		es=ts.getExpansionState();
-		contentPane.remove(this.browser.scrollPane);	
+		es = ts.getExpansionState();
+		contentPane.remove(this.scrollPane);
 		this.browser = new Browser(this);
-		ts=new TreeState(this.browser.fileTree);
+		ts = new TreeState(this.browser.fileTree);
 		ts.setExpansionState(es);
-		this.browser.scrollPane.getViewport().setView(this.browser.fileTree);
+		this.scrollPane.getViewport().setView(this.browser.fileTree);
 	}
-	
+	private static void addPopup(java.awt.Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				popup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		});
+	}
 }

@@ -23,10 +23,9 @@ public class Console {
 		textArea.setEditable(false);
 		textArea.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		textArea.setLineWrap(true);
-		JScrollPane sp = new JScrollPane(textArea);
-		sp.setBounds((int)(mainWin.factx*10), (int)(mainWin.facty*537), (int)(mainWin.factx*988), (int)(mainWin.facty*150));
-		sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		mainWin.contentPane.add(sp);
+		this.mainWin.scrollPane_1.setViewportView(textArea);
+		this.mainWin.scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		
 	}
 	
 	public void compile(String path, boolean dowehavetorun){

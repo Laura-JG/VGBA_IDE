@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.JScrollPane;
 
@@ -14,85 +15,82 @@ public class Browser {
 	
 	MainWin mainWin;
 	FileTree fileTree;
-	JScrollPane scrollPane;
+	//JScrollPane scrollPane;
 	
 	public Browser(final MainWin mainWin)
-	{
+ {
 		this.mainWin = mainWin;
-		this.scrollPane = new JScrollPane();
-		this.scrollPane.setBounds((int)(mainWin.factx*10), (int)(mainWin.facty*30), (int)(mainWin.factx*150), (int)(mainWin.facty*493));
-		
+		this.mainWin.browserLabel.setText(this.mainWin.pathFromFile.getParent()+File.separator+this.mainWin.pathFromFile.getName());
 		this.buildTree(this.mainWin.pathFromFile.toString());
-		
+
 		// different clicks on tree handler
-		fileTree.addMouseListener(new MouseAdapter()
-		{
+		fileTree.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// Right click on tree handler
-				if (SwingUtilities.isRightMouseButton(e))
-				{
+				if (SwingUtilities.isRightMouseButton(e)) {
 					int row = fileTree.getClosestRowForLocation(e.getX(), e.getY());
-			        fileTree.setSelectionRow(row);
-			        File fft = getFileFromTree();
-			        // If source isn't selected, don't show new file option
-			        if (!(fft.getName().equals("source")) && !(fft.getName().equals("include"))) { //TODO
-			        		for (Component child: mainWin.popupMenu.getComponents())
-			        		{
-			        				if (((JMenuItem)child).getText()=="New..."){
-			        					for(Component leaf : ((JMenu)child).getPopupMenu().getComponents()){
-			        						if (((JMenuItem)leaf).getText()=="File..."){
-			        							leaf.setEnabled(false);
-			        						}
-			        					}
-			        					
-			        				}
-			        		}
-			        } 
-			        else { // If source is selected, show all possible options
-			        	
-			        	for (Component child: mainWin.popupMenu.getComponents())
-		        		{
-		        				if (((JMenuItem)child).getText()=="New..."){
-		        					for(Component leaf : ((JMenu)child).getPopupMenu().getComponents()){
-		        						if (((JMenuItem)leaf).getText()=="File..."){
-		        							leaf.setEnabled(true);
-		        							for(Component leaf2 : ((JMenu)leaf).getPopupMenu().getComponents()){
-		        								if (((JMenuItem)leaf2).getText().equals(".H File") && fft.getName().equals("include")){
-		        									leaf2.setEnabled(true);
-		        								}
-		        								if (((JMenuItem)leaf2).getText().equals(".C File") && fft.getName().equals("include")){
-		        									leaf2.setEnabled(false);
-		        								}
-		        								if (((JMenuItem)leaf2).getText().equals(".S File") && fft.getName().equals("include")){
-		        									leaf2.setEnabled(false);
-		        								}
-		        								if (((JMenuItem)leaf2).getText().equals(".H File") && fft.getName().equals("source")){
-		        									leaf2.setEnabled(false);
-		        								}
-		        								if (((JMenuItem)leaf2).getText().equals(".C File") && fft.getName().equals("source")){
-		        									leaf2.setEnabled(true);
-		        								}
-		        								if (((JMenuItem)leaf2).getText().equals(".S File") && fft.getName().equals("source")){
-		        									leaf2.setEnabled(true);
-		        								}
-		        							
-		        							}
-		        						}
-		        					}
-		        				}
-		        			}
-			        	}
-			    mainWin.popupMenu.show(e.getComponent(), e.getX(), e.getY());
+					fileTree.setSelectionRow(row);
+					File fft = getFileFromTree();
+					// If source isn't selected, don't show new file option
+					if (!(fft.getName().equals("source")) && !(fft.getName().equals("include"))) { 
+						for (Component child : mainWin.popupMenu.getComponents()) {
+							if (((JMenuItem) child).getText() == "New...") {
+								for (Component leaf : ((JMenu) child).getPopupMenu().getComponents()) {
+									if (((JMenuItem) leaf).getText() == "File...") {
+										leaf.setEnabled(false);
+									}
+								}
+
+							}
+						}
+					} else { // If source is selected, show all possible options
+
+						for (Component child : mainWin.popupMenu.getComponents()) {
+							if (((JMenuItem) child).getText() == "New...") {
+								for (Component leaf : ((JMenu) child).getPopupMenu().getComponents()) {
+									if (((JMenuItem) leaf).getText() == "File...") {
+										leaf.setEnabled(true);
+										for (Component leaf2 : ((JMenu) leaf).getPopupMenu().getComponents()) {
+											if (((JMenuItem) leaf2).getText().equals(".H File")
+													&& fft.getName().equals("include")) {
+												leaf2.setEnabled(true);
+											}
+											if (((JMenuItem) leaf2).getText().equals(".C File")
+													&& fft.getName().equals("include")) {
+												leaf2.setEnabled(false);
+											}
+											if (((JMenuItem) leaf2).getText().equals(".S File")
+													&& fft.getName().equals("include")) {
+												leaf2.setEnabled(false);
+											}
+											if (((JMenuItem) leaf2).getText().equals(".H File")
+													&& fft.getName().equals("source")) {
+												leaf2.setEnabled(false);
+											}
+											if (((JMenuItem) leaf2).getText().equals(".C File")
+													&& fft.getName().equals("source")) {
+												leaf2.setEnabled(true);
+											}
+											if (((JMenuItem) leaf2).getText().equals(".S File")
+													&& fft.getName().equals("source")) {
+												leaf2.setEnabled(true);
+											}
+
+										}
+									}
+								}
+							}
+						}
+					}
+					mainWin.popupMenu.show(e.getComponent(), e.getX(), e.getY());
 				} // Double click on tree handler
-				else if (e.getClickCount()==2)
-				{	
+				else if (e.getClickCount() == 2) {
 					OpenFile(getFileFromTree().toString());
-				}	
+				}
 			}
 		});
-		this.scrollPane.setViewportView(this.fileTree);
-		mainWin.contentPane.add(this.scrollPane);
+		this.mainWin.scrollPane.setViewportView(this.fileTree);
 	}
 	
 	public File getFileFromTree(){
@@ -149,5 +147,6 @@ public class Browser {
 	public void buildTree(String path) {
 		this.fileTree = new FileTree(path);
 	}
+	
 	
 }
