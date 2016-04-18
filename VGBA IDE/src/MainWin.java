@@ -32,6 +32,8 @@ import com.sun.xml.internal.ws.api.server.Container;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
+
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 public class MainWin{
@@ -56,6 +58,7 @@ public class MainWin{
 	protected RTextScrollPane textScrollPane;
 	protected JScrollPane scrollPane;
 	protected JScrollPane scrollPane_1;
+	protected RSyntaxTextArea syntaxTextArea;
 	
 	public MainWin(boolean check,String inst_path) throws IOException{
 
@@ -102,7 +105,7 @@ public class MainWin{
 			}
 		});
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		//lblNewLabel.setBounds((int)(982*factx), (int)(10*facty), (int)(11*factx), (int)(14*facty));
+		
 		
 		
 		JLabel lblNewLabel_1 = new JLabel("A");
@@ -114,13 +117,15 @@ public class MainWin{
 			}
 		});
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		//lblNewLabel_1.setBounds((int)(956*factx), (int)(10*facty), (int)(11*factx), (int)(14*facty));
+		
 		//---LABELS---
 		
 		//Containers
 		this.scrollPane = new JScrollPane();
 		this.scrollPane_1 = new JScrollPane();
-		this.textScrollPane = new RTextScrollPane();
+		this.syntaxTextArea=new RSyntaxTextArea();
+		this.syntaxTextArea.setCodeFoldingEnabled(true);
+		this.textScrollPane = new RTextScrollPane(this.syntaxTextArea);
 		//-------------
 		this.popupMenu = new JPopupMenu();
 		addPopup(this.scrollPane, this.popupMenu);

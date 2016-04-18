@@ -39,8 +39,8 @@ public class Editor {
 	{
 		
 		this.mainWin = mainWin;
-		this.syntaxTextArea = new RSyntaxTextArea();
-		this.syntaxTextArea.setCodeFoldingEnabled(true);
+		this.syntaxTextArea = mainWin.syntaxTextArea;
+		//this.syntaxTextArea.setCodeFoldingEnabled(true);
 		mainWin.textScrollPane.setViewportView(this.syntaxTextArea);
 		//textScrollPane.setBounds((int)(170*mainWin.factx), (int)(30*mainWin.facty), (int)(828*mainWin.factx), (int)(493*mainWin.facty));		
 		//this.mainWin.contentPane.add(textScrollPane);	
