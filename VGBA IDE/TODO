@@ -1,0 +1,22 @@
+-settings.cfg
+
+
+	Contiene TUTTE LE OPZIONI
+	con un formato parsabile da java
+
+	path to workspace
+	makefile switch
+	text size
+
+UI
+
+- Barra verticale tra browser ed editor movibile per ridimensionare i componenti in relazione all aposizione della barra
+
+System
+se settings.cfg esiste ma è vuoto ricrea il workspace
+
+
+a tempo perso
+inglobare ws_creator in starting point
+rinominare inst_path
+pulizia generale del codice pl0x
