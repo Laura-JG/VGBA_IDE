@@ -2,9 +2,8 @@
 - Binaries -
 ------------
 MediaFire Folder: http://www.mediafire.com/?3t5vn2bg9kgqg
-Full 1.0 Installer: http://www.mediafire.com/download/6zqbhtz90aa63cr/VGBA_IDE_1.0_x64Inst.tar.gz
-Update to 1.0 (Requires a previous installation of VGBA_IDE): http://www.mediafire.com/download/dw1wy42xbz8fydi/VGBA_IDE_Update_1.0.tar.gz
-
+Full 1.0 Installer: http://www.mediafire.com/download/mio0osodtw6i5m5/VGBA_IDE_1.0_x64Inst.tar.gz
+Update to 1.0 (Requires a previous installation of VGBA_IDE): http://www.mediafire.com/download/hc5ed232fad31u5/VGBA_IDE_Update_1.0.tar.gz
 ----------------
 - Requirements -
 ----------------

@@ -426,7 +426,6 @@ public class MainWin{
 	public void refreshBrowser() {
 		TreeState ts = new TreeState(this.browser.fileTree);
 		es = ts.getExpansionState();
-		contentPane.remove(this.scrollPane);
 		this.browser = new Browser(this);
 		ts = new TreeState(this.browser.fileTree);
 		ts.setExpansionState(es);
