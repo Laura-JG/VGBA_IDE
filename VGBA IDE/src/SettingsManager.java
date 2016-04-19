@@ -31,10 +31,14 @@ public class SettingsManager{
 	@SuppressWarnings("rawtypes")
 	protected JComboBox comboBox_1;
 	protected String[] archList=new String[] {"-marm", "-mthumb -mthumb-interwork"};
-	protected int[] txtSizeList= new int[] {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+	protected String[] txtSizeList;
 	
 	public SettingsManager(MainWin mainWin) {
-		
+		txtSizeList = new String[21];
+		for (int i=0; i<21;i++)
+		{
+			txtSizeList[i]=""+(10+i); //super classy int to string conversion ;)
+		}
 		this.settings= new Settings();
 		this.mainWin = mainWin;
 		settingsFile=new File(mainWin.inst_path+File.separator+"settings.cfg");
@@ -146,11 +150,11 @@ public class SettingsManager{
 		
 		this.comboBox_1 = new JComboBox();
 		
-		comboBox_1.setModel(new DefaultComboBoxModel(converter(txtSizeList)));
+		comboBox_1.setModel(new DefaultComboBoxModel(txtSizeList));
 		comboBox_1.setSelectedIndex(3);
 		comboBox_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				settings.setTextSize(txtSizeList[comboBox_1.getSelectedIndex()]);
+				settings.setTextSize(toInt(txtSizeList[comboBox_1.getSelectedIndex()]));
 			}
 		});
 		comboBox_1.setBounds(171, 134, 191, 17);
@@ -167,20 +171,17 @@ public class SettingsManager{
 		}
 	}
 	
-	public String[] converter(int[] source)
+	public int toInt(String source)
 	{
-		String[] converted=new String[source.length];
-		for(int i=0;i<source.length;i++)
-		{
-		converted[i]="" + source[i];
-		System.out.println(converted[i]);
-		}
+		int converted=0;		
+		converted= Integer.parseInt(source);
+		
 	return converted;
 	}
 		
  	public void storeSettings(){
 		try {
-			this.settings.setTextSize(txtSizeList[comboBox_1.getSelectedIndex()]);
+			this.settings.setTextSize(toInt(txtSizeList[comboBox_1.getSelectedIndex()]));
 			System.out.println(txtSizeList[comboBox_1.getSelectedIndex()]);
 			this.settings.setArch(archList[comboBox.getSelectedIndex()]);
 			Yaml.dump(settings,settingsFile); //YAML Write

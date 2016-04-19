@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.swing.JMenuBar;
 import java.io.IOException;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -156,7 +156,7 @@ public class MainWin{
 		this.editor = new Editor(this);
 		this.console = new Console(this);
 		this.browser = new Browser(this);
-		this.newPj = new NewPj(this);
+		this.newPj = new NewPj(this,false);
 		this.newFile = new NewFile(this);
 		//-------------------
 
@@ -194,7 +194,7 @@ public class MainWin{
 				File fft = browser.getFileFromTree();
 		        if (fft.getName().equals("source")) {
 				newFile.ext = "c";
-				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				newFile.setVisible(true);
 		        }else{
 		        	new MessageBox("New .c files must be placed in \"source\" folder.", "info");
@@ -211,7 +211,7 @@ public class MainWin{
 				File fft = browser.getFileFromTree();
 		        if (fft.getName().equals("source")) {
 				newFile.ext = "s";
-				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				newFile.setVisible(true);
 		        } else {
 		        	new MessageBox("New .s files must be placed in \"source\" folder.", "info");
@@ -227,7 +227,7 @@ public class MainWin{
 				File fft = browser.getFileFromTree();
 		        if (fft.getName().equals("include")) {
 				newFile.ext = "h";
-				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				newFile.setVisible(true);
 		        } else {
 		        	new MessageBox("New .h files must be placed in \"include\" folder.", "info");
@@ -239,8 +239,7 @@ public class MainWin{
 		JMenuItem mntmProject = new JMenuItem("Project");
 		mntmProject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				newPj.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				newPj.setVisible(true);
+				newPj.buildWindow(true);
 			}
 		});
 		mntmProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
@@ -349,7 +348,7 @@ public class MainWin{
 		mntmcFile_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				newFile.ext = "c";
-				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				newFile.setVisible(true);
 			}
 		});
@@ -359,7 +358,7 @@ public class MainWin{
 		mntmcFile_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				newFile.ext = "h";
-				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				newFile.setVisible(true);
 			}
 		});
@@ -369,7 +368,7 @@ public class MainWin{
 		mntmsFile_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				newFile.ext = "s";
-				newFile.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				newFile.setVisible(true);
 			}
 		});
@@ -378,8 +377,7 @@ public class MainWin{
 		JMenuItem mntmProject_1 = new JMenuItem("Project");
 		mntmProject_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				newPj.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				newPj.setVisible(true);
+				newPj.buildWindow(true);
 			}
 		});
 		mnNew1.add(mntmProject_1);

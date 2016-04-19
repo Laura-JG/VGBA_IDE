@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
@@ -77,6 +78,14 @@ public class Editor {
 	
 	public void saveFile()
 	{
+		if (this.opened==null){
+			JOptionPane JOP = new JOptionPane();
+			 @SuppressWarnings("static-access")
+			int reply = JOP.showConfirmDialog(null, "Create a new project?", "New Project?", JOptionPane.YES_NO_OPTION);
+			if (reply == JOptionPane.YES_OPTION) {
+				mainWin.newPj.buildWindow(true);
+			}				
+		}
 		String text=this.syntaxTextArea.getText();
 		try {
 			BufferedWriter w = new BufferedWriter(new FileWriter(opened));
