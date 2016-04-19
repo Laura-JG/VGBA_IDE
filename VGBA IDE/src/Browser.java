@@ -15,13 +15,12 @@ public class Browser {
 	
 	MainWin mainWin;
 	FileTree fileTree;
-	//JScrollPane scrollPane;
 	
 	public Browser(final MainWin mainWin)
  {
 		this.mainWin = mainWin;
-		this.mainWin.browserLabel.setText(this.mainWin.pathFromFile.getParent()+File.separator+this.mainWin.pathFromFile.getName());
-		this.buildTree(this.mainWin.pathFromFile.toString());
+		this.mainWin.browserLabel.setText(this.mainWin.settings.getPathToString());
+		this.buildTree(this.mainWin.settings.getPathToString());
 
 		// different clicks on tree handler
 		fileTree.addMouseListener(new MouseAdapter() {

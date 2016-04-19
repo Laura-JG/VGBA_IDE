@@ -7,29 +7,18 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import javax.swing.JMenuBar;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SpringLayout;
 
-import com.sun.xml.internal.ws.api.Component;
-import com.sun.xml.internal.ws.api.server.Container;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 
@@ -59,40 +48,34 @@ public class MainWin{
 	protected JScrollPane scrollPane;
 	protected JScrollPane scrollPane_1;
 	protected RSyntaxTextArea syntaxTextArea;
+	protected Settings settings;
 	
-	public MainWin(boolean check,String inst_path) throws IOException{
-
-		// Creation du workspace si c'est la premiere execution; sinon lecture du fichier
+	public static void main(String[] args) throws IOException {
+		String inst_path = System.getProperty("user.home")+File.separator+"VGBA_IDE";
+		new MainWin( inst_path);
+	}
+	
+	public MainWin(String inst_path) throws IOException{
 		this.inst_path = inst_path;
-		this.wsCreator = new Ws_creator(this);
-		if (!check) {
-			this.pathFromFile = this.wsCreator.getWsPath();
-			this.wsCreator.createWs(this.pathFromFile, inst_path);
-		} else {
-			InputStream extracteur = new FileInputStream(inst_path + File.separator + "settings.cfg");
-			InputStreamReader isr = new InputStreamReader(extracteur, Charset.forName("UTF-8"));
-			BufferedReader br = new BufferedReader(isr);
-			String line;
-			while ((line = br.readLine()) != null) {
-				this.pathFromFile = new File(line);
-			}
-			br.close();
+		SettingsManager settingsManager = new SettingsManager(this);
+		settings= settingsManager.getSettings();
+		pathFromFile=settings.getPath();
+		if(!settingsManager.firstStart)
+		{
+			System.out.println("Configuration File found!");
+			buildWindow();
 		}
-		// Verification du cas ou le dossier n existe plus
-		if (!pathFromFile.exists()) {
-			new MessageBox("Previous workspace doesn't exist anymore.", "warn");
-			this.pathFromFile = this.wsCreator.getWsPath();
-			this.wsCreator.createWs(this.pathFromFile, inst_path);
-		}
-		
+	}
+	
+	public void buildWindow(){
 		//MAIN FRAME
 		this.frame = new JFrame("VGBA_IDE");
+		frame.setDefaultCloseOperation(2);
 		JPanel contentPane = new JPanel();
-		
 		frame.getContentPane().add(contentPane);
 		SpringLayout sl_contentPane = new SpringLayout();
 		contentPane.setLayout(sl_contentPane);
-			//LABELS
+		//LABELS
 		JLabel lblconsole = new JLabel("Console:");
 		this.label = new JLabel("");
 		this.browserLabel = new JLabel("");
@@ -124,6 +107,7 @@ public class MainWin{
 		this.scrollPane = new JScrollPane();
 		this.scrollPane_1 = new JScrollPane();
 		this.syntaxTextArea=new RSyntaxTextArea();
+		syntaxTextArea.setFont(syntaxTextArea.getFont().deriveFont((float)this.settings.getTextSize()));
 		this.syntaxTextArea.setCodeFoldingEnabled(true);
 		this.textScrollPane = new RTextScrollPane(this.syntaxTextArea);
 		//-------------
@@ -135,7 +119,7 @@ public class MainWin{
 		this.factx = width/1024.f;
 		this.heigth = (int)screenSize.getHeight();
 		this.facty = heigth/768.f;
-		this.frame.setBounds(0, 0, width, heigth);
+		this.frame.setBounds(0, 0,(int)(width*0.5), (int)(heigth*0.5));
 		//-----------
 		
 		
@@ -189,7 +173,6 @@ public class MainWin{
 		//------------
 		
 		frame.setVisible(true);
-		//------MAIN FRAME---------------
 	}
 
 	public void makeMenu() {
