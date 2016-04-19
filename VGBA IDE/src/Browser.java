@@ -6,9 +6,7 @@ import java.util.regex.Matcher;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import javax.swing.JScrollPane;
 
 
 public class Browser {

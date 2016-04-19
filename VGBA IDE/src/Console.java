@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
@@ -31,7 +30,8 @@ public class Console {
 	public void compile(String path, boolean dowehavetorun){
 		if (this.mainWin.editor.getTextState()){
 			JOptionPane JOP = new JOptionPane();
-			 int reply = JOP.showConfirmDialog(null, "Save file?", "UNSAVED CHANGES", JOptionPane.YES_NO_OPTION);
+			 @SuppressWarnings("static-access")
+			int reply = JOP.showConfirmDialog(null, "Save file?", "UNSAVED CHANGES", JOptionPane.YES_NO_OPTION);
 			if (reply == JOptionPane.YES_OPTION) {
 				mainWin.editor.saveFile();
 			}				
