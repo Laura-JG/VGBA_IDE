@@ -33,7 +33,6 @@ public class MainWin{
 	protected int heigth;
 	protected JPanel contentPane;
 	protected JPopupMenu popupMenu;
-	protected Ws_creator wsCreator;
 	protected String inst_path;
 	protected File pathFromFile;
 	protected Editor editor;
@@ -49,6 +48,7 @@ public class MainWin{
 	protected JScrollPane scrollPane_1;
 	protected RSyntaxTextArea syntaxTextArea;
 	protected Settings settings;
+	SettingsManager settingsManager;
 	
 	public static void main(String[] args) throws IOException {
 		String inst_path = System.getProperty("user.home")+File.separator+"VGBA_IDE";
@@ -57,7 +57,7 @@ public class MainWin{
 	
 	public MainWin(String inst_path) throws IOException{
 		this.inst_path = inst_path;
-		SettingsManager settingsManager = new SettingsManager(this);
+		this.settingsManager = new SettingsManager(this);
 		settings= settingsManager.getSettings();
 		pathFromFile=settings.getPath();
 		if(!settingsManager.firstStart)
@@ -405,8 +405,8 @@ public class MainWin{
 
 	// Mis a jour du workspace et de l interface
 	public void rebuildWorkspace() {
-		this.pathFromFile = this.wsCreator.getWsPath();
-		this.wsCreator.createWs(this.pathFromFile, inst_path);
+		this.pathFromFile = this.settings.getPath();
+		this.settingsManager.generateWorkspace(pathFromFile);
 		this.editor.refresh();
 		this.refreshBrowser();
 	}
