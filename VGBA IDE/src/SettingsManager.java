@@ -1,10 +1,14 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import org.ho.yaml.Yaml;
+import org.ho.yaml.exception.YamlException;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -22,6 +26,12 @@ public class SettingsManager{
 	protected File selectedFile;
 	protected File settingsFile;
 	protected boolean settingsFileExists,firstStart;
+	@SuppressWarnings("rawtypes")
+	protected JComboBox comboBox;
+	@SuppressWarnings("rawtypes")
+	protected JComboBox comboBox_1;
+	protected String[] archList=new String[] {"-marm", "-mthumb -mthumb-interwork"};
+	protected int[] txtSizeList= new int[] {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
 	
 	public SettingsManager(MainWin mainWin) {
 		
@@ -44,6 +54,7 @@ public class SettingsManager{
 	/**
 	 * @wbp.parser.entryPoint
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setDefaults(){
 		
 		try {
@@ -55,8 +66,7 @@ public class SettingsManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		final String[] archList=new String[] {"-marm", "-mthumb -mthumb-interwork"};
-		final int[] txtSizeList= new int[] {10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+		
 		final JFileChooser fc = new JFileChooser();
 		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		final JFrame frame=new JFrame("VGBA_IDE Configuration");
@@ -85,7 +95,7 @@ public class SettingsManager{
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (settings.getPath()!= null && settings.getArch() != null &&  settings.getTextSize() != 0){
+				if (settings.getPath()!= null){
 					storeSettings();
 					firstStart=false;
 					generateWorkspace(selectedFile);
@@ -93,6 +103,7 @@ public class SettingsManager{
 					frame.dispose();
 					mainWin.buildWindow();
 				}
+				
 			}
 		});
 		btnSave.setBounds(12, 177, 424, 25);
@@ -120,28 +131,28 @@ public class SettingsManager{
 		btnNewButton.setBounds(374, 54, 62, 19);
 		contentPane.add(btnNewButton);
 		
-		final JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"-marm", "-mthumb -mthumb-interwork"}));
+		this.comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(archList));
 		comboBox.setSelectedIndex(0);
-		//comboBox.setSelectedIndex(0);
+
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				settings.setArch(archList[comboBox.getSelectedIndex()]);
 			}
 		});
-		//comboBox.setModel(new DefaultComboBoxModel(arch));
+
 		comboBox.setBounds(171, 94, 191, 17);
 		contentPane.add(comboBox);
 		
-		final JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"}));
+		this.comboBox_1 = new JComboBox();
+		
+		comboBox_1.setModel(new DefaultComboBoxModel(converter(txtSizeList)));
+		comboBox_1.setSelectedIndex(3);
 		comboBox_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				settings.setTextSize(txtSizeList[comboBox_1.getSelectedIndex()]);
 			}
 		});
-		//comboBox.setSelectedIndex(3);
-		//comboBox_1.setModel(new DefaultComboBoxModel(txtSizeList));
 		comboBox_1.setBounds(171, 134, 191, 17);
 		contentPane.add(comboBox_1);
 		
@@ -156,12 +167,28 @@ public class SettingsManager{
 		}
 	}
 	
-	
-	public void storeSettings(){
+	public String[] converter(int[] source)
+	{
+		String[] converted=new String[source.length];
+		for(int i=0;i<source.length;i++)
+		{
+		converted[i]="" + source[i];
+		System.out.println(converted[i]);
+		}
+	return converted;
+	}
+		
+ 	public void storeSettings(){
 		try {
+			this.settings.setTextSize(txtSizeList[comboBox_1.getSelectedIndex()]);
+			System.out.println(txtSizeList[comboBox_1.getSelectedIndex()]);
+			this.settings.setArch(archList[comboBox.getSelectedIndex()]);
 			Yaml.dump(settings,settingsFile); //YAML Write
+			
 		} catch (FileNotFoundException e) {
+		
 			// TODO MessageBox couldnt save settings file;
+			//TODO erase previously created settings.cfg file
 			e.printStackTrace();
 		}
 	}
@@ -169,7 +196,15 @@ public class SettingsManager{
 		try {
 			this.settings=(Settings) Yaml.load(settingsFile); //YAML Read
 			//TODO check if valid Yaml file, how?
-		} catch (FileNotFoundException e) {
+			//TODO erase previously created settings.cfg file
+		}catch (YamlException y){
+		
+			new DeleteDirectory(settingsFile);
+			
+			new SettingsManager(this.mainWin);
+		}
+		catch (FileNotFoundException e) {
+			
 			// TODO MessageBox Couldnt Read settings file
 			e.printStackTrace();
 		}

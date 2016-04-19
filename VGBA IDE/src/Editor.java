@@ -27,6 +27,7 @@ public class Editor {
 		this.mainWin = mainWin;
 		
 		this.syntaxTextArea=mainWin.syntaxTextArea;
+		this.syntaxTextArea.setFont(syntaxTextArea.getFont().deriveFont((float)mainWin.settings.getTextSize()));
 		mainWin.textScrollPane.setViewportView(this.syntaxTextArea);
 		
 	}

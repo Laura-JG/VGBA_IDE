@@ -107,7 +107,6 @@ public class MainWin{
 		this.scrollPane = new JScrollPane();
 		this.scrollPane_1 = new JScrollPane();
 		this.syntaxTextArea=new RSyntaxTextArea();
-		syntaxTextArea.setFont(syntaxTextArea.getFont().deriveFont((float)this.settings.getTextSize()));
 		this.syntaxTextArea.setCodeFoldingEnabled(true);
 		this.textScrollPane = new RTextScrollPane(this.syntaxTextArea);
 		//-------------
