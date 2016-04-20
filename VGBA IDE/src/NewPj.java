@@ -82,8 +82,8 @@ public class NewPj extends JDialog {
 		});
 		contentPane.add(cancelButton);
 		
-		this.comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(this.archList));
+		this.comboBox = new JComboBox<String>();
+		comboBox.setModel(new DefaultComboBoxModel<String>(this.archList));
 		comboBox.setSelectedIndex(0);
 
 		comboBox.addActionListener(new ActionListener() {
@@ -96,9 +96,9 @@ public class NewPj extends JDialog {
 		comboBox.setBounds(120, 58, 190, 24);
 		contentPane.add(comboBox);
 		
-		this.comboBox_1 = new JComboBox();
+		this.comboBox_1 = new JComboBox<String>();
 		
-		comboBox_1.setModel(new DefaultComboBoxModel(this.txtSizeList));
+		comboBox_1.setModel(new DefaultComboBoxModel<String>(this.txtSizeList));
 		comboBox_1.setSelectedIndex(3);
 		comboBox_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

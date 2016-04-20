@@ -11,7 +11,6 @@ import java.io.File;
 import javax.swing.JMenuBar;
 import java.io.IOException;
 import javax.swing.JFrame;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JPanel;

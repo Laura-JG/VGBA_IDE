@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,10 +24,10 @@ public class SettingsManager{
 	protected File selectedFile;
 	protected File settingsFile;
 	protected boolean settingsFileExists,firstStart;
-	@SuppressWarnings("rawtypes")
-	protected JComboBox comboBox;
-	@SuppressWarnings("rawtypes")
-	protected JComboBox comboBox_1;
+
+	protected JComboBox <String>comboBox;
+
+	protected JComboBox <String>comboBox_1;
 	protected String[] archList=new String[] {"-marm", "-mthumb -mthumb-interwork"};
 	protected String[] txtSizeList;
 	
@@ -58,7 +56,6 @@ public class SettingsManager{
 	/**
 	 * @wbp.parser.entryPoint
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void setDefaults(){
 		
 		try {
@@ -135,8 +132,8 @@ public class SettingsManager{
 		btnNewButton.setBounds(374, 54, 62, 19);
 		contentPane.add(btnNewButton);
 		
-		this.comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(archList));
+		this.comboBox = new JComboBox<String>();
+		comboBox.setModel(new DefaultComboBoxModel<String>(archList));
 		comboBox.setSelectedIndex(0);
 
 		comboBox.addActionListener(new ActionListener() {
@@ -148,9 +145,9 @@ public class SettingsManager{
 		comboBox.setBounds(171, 94, 191, 17);
 		contentPane.add(comboBox);
 		
-		this.comboBox_1 = new JComboBox();
+		this.comboBox_1 = new JComboBox<String>();
 		
-		comboBox_1.setModel(new DefaultComboBoxModel(txtSizeList));
+		comboBox_1.setModel(new DefaultComboBoxModel<String>(txtSizeList));
 		comboBox_1.setSelectedIndex(3);
 		comboBox_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
