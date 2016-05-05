@@ -69,8 +69,8 @@ public class DefaultSettingsDialog extends JDialog {
 		btnNewButton.setBounds(372, 36, 74, 25);
 		contentPane.add(btnNewButton);
 
-		JLabel lblNewLabel = new JLabel("Path:");
-		lblNewLabel.setBounds(10, 41, 70, 15);
+		JLabel lblNewLabel = new JLabel("Workspace:");
+		lblNewLabel.setBounds(10, 41, 90, 15);
 		contentPane.add(lblNewLabel);
 
 		JLabel lblArchitecture = new JLabel("Architecture:");

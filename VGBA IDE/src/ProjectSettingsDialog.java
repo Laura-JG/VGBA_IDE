@@ -58,7 +58,7 @@ public class ProjectSettingsDialog extends JDialog {
 		lblTitle.setBounds(0, 12, 458, 15);
 		contentPane.add(lblTitle);
 
-		JLabel lblNewLabel = new JLabel("Name:");
+		JLabel lblNewLabel = new JLabel("Project:");
 		lblNewLabel.setBounds(10, 41, 70, 15);
 		contentPane.add(lblNewLabel);
 
