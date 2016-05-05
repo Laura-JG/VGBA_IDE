@@ -17,8 +17,8 @@ public class Browser {
 	public Browser(final MainWin mainWin)
  {
 		this.mainWin = mainWin;
-		this.mainWin.browserLabel.setText(this.mainWin.settings.getPathToString());
-		this.buildTree(this.mainWin.settings.getPathToString());
+		this.mainWin.browserLabel.setText(new File(this.mainWin.getConfigManager().getOption(Options.OPTION_PATH)).getName());
+		this.buildTree(this.mainWin.getConfigManager().getOption(Options.OPTION_PATH));
 
 		// different clicks on tree handler
 		fileTree.addMouseListener(new MouseAdapter() {
@@ -114,6 +114,7 @@ public class Browser {
 		{
 			if (file_F.getName().equals("Makefile"))
 			{
+				mainWin.getConfigManager().loadProjectSettings(file_F);
 				mainWin.editor.loadFile(file_F,file_ext);
 				String file_P = file_F.getParent();
 				mainWin.label.setText(file_P.substring(file_P.lastIndexOf(File.separator)+1,file_P.length())+ " : " + file_F.getName());
@@ -122,9 +123,11 @@ public class Browser {
 			file_ext=getFileExtension(file_F);
 			if ((file_ext.equals("c")) || (file_ext.equals("s")) || (file_ext.equals("h")))
 			{
+				mainWin.getConfigManager().loadProjectSettings(file_F);
 				mainWin.editor.loadFile(file_F,file_ext);
 				String file_P = file_F.getParentFile().getParent();
 				mainWin.label.setText(file_P.substring(file_P.lastIndexOf(File.separator)+1,file_P.length())+ " : " + file_F.getName());
+				
 			} else {
 				new MessageBox("Can't open this type of file", "info");
 			}

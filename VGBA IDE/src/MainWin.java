@@ -24,8 +24,8 @@ import javax.swing.JScrollPane;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-public class MainWin{
-	
+public class MainWin {
+
 	protected float factx;
 	protected float facty;
 	protected int width;
@@ -37,44 +37,51 @@ public class MainWin{
 	protected Editor editor;
 	protected Browser browser;
 	protected Console console;
-	protected NewPj newPj;
 	protected NewFile newFile;
-	protected JLabel label,browserLabel;
+	protected JLabel label, browserLabel;
 	protected String es;
 	protected JFrame frame;
 	protected RTextScrollPane textScrollPane;
 	protected JScrollPane scrollPane;
 	protected JScrollPane scrollPane_1;
 	protected RSyntaxTextArea syntaxTextArea;
-	protected Settings settings;
-	SettingsManager settingsManager;
-	
+	protected File settingsFile;
+	protected ConfigManager configManager;
+
 	public static void main(String[] args) throws IOException {
-		String inst_path = System.getProperty("user.home")+File.separator+"VGBA_IDE";
-		new MainWin( inst_path);
+		String inst_path = System.getProperty("user.home") + File.separator + "VGBA_IDE";
+		new MainWin(inst_path);
 	}
-	
-	public MainWin(String inst_path) throws IOException{
+
+	public MainWin(String inst_path) throws IOException {
 		this.inst_path = inst_path;
-		this.settingsManager = new SettingsManager(this);
-		settings= settingsManager.getSettings();
-		pathFromFile=settings.getPath();
-		if(!settingsManager.firstStart)
-		{
-			System.out.println("Configuration File found!");
-			buildWindow();
-		}
+		this.configManager = new ConfigManager(this);
+		pathFromFile = new File(configManager.getOption(Options.OPTION_PATH));
+		buildWindow();
 	}
 	
-	public void buildWindow(){
-		//MAIN FRAME
+	public String getInstPath() {
+		return this.inst_path;
+	}
+
+	public ConfigManager getConfigManager() {
+		return this.configManager;
+	}
+
+	public File getSettingsFile() {
+		File settingsFile = new File(this.inst_path + File.separator + "settings.cfg");
+		return settingsFile;
+	}
+
+	public void buildWindow() {
+		// MAIN FRAME
 		this.frame = new JFrame("VGBA_IDE");
 		frame.setDefaultCloseOperation(2);
 		JPanel contentPane = new JPanel();
 		frame.getContentPane().add(contentPane);
 		SpringLayout sl_contentPane = new SpringLayout();
 		contentPane.setLayout(sl_contentPane);
-		//LABELS
+		// LABELS
 		JLabel lblconsole = new JLabel("Console:");
 		this.label = new JLabel("");
 		this.browserLabel = new JLabel("");
@@ -82,84 +89,111 @@ public class MainWin{
 		lblNewLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				float size = Math.min(editor.syntaxTextArea.getFont().getSize2D()+1, 30);
+				float size = Math.min(editor.syntaxTextArea.getFont().getSize2D() + 1, 30);
 				editor.syntaxTextArea.setFont(editor.syntaxTextArea.getFont().deriveFont(size));
 			}
 		});
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		
-		
-		
+
 		JLabel lblNewLabel_1 = new JLabel("A");
 		lblNewLabel_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				float size = Math.max(editor.syntaxTextArea.getFont().getSize2D()-1, 10);
+				float size = Math.max(editor.syntaxTextArea.getFont().getSize2D() - 1, 10);
 				editor.syntaxTextArea.setFont(editor.syntaxTextArea.getFont().deriveFont(size));
 			}
 		});
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		
-		//---LABELS---
-		
-		//Containers
+
+		// ---LABELS---
+
+		// Containers
 		this.scrollPane = new JScrollPane();
 		this.scrollPane_1 = new JScrollPane();
-		this.syntaxTextArea=new RSyntaxTextArea();
+		this.syntaxTextArea = new RSyntaxTextArea();
 		this.syntaxTextArea.setCodeFoldingEnabled(true);
 		this.textScrollPane = new RTextScrollPane(this.syntaxTextArea);
-		//-------------
+		// -------------
 		this.popupMenu = new JPopupMenu();
 		addPopup(this.scrollPane, this.popupMenu);
-		//Variable Screen Size
+		// Variable Screen Size
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		this.width = (int)screenSize.getWidth();
-		this.factx = width/1024.f;
-		this.heigth = (int)screenSize.getHeight();
-		this.facty = heigth/768.f;
-		this.frame.setBounds(0, 0,(int)(width*0.5), (int)(heigth*0.5));
-		//-----------
-		
-		
-		
-		//Cointainers Properties
-		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane, 30, SpringLayout.NORTH, contentPane); //top browser
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane, (int)facty*-170, SpringLayout.SOUTH, contentPane); //bottom Browser
-		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, contentPane); //left browser
-		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane, (int)factx*200, SpringLayout.WEST, contentPane);	//right browser
-		sl_contentPane.putConstraint(SpringLayout.WEST, this.browserLabel, 0, SpringLayout.WEST, scrollPane);	//left WSName Label
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.browserLabel, -5, SpringLayout.NORTH, scrollPane); //bot WSName Label
-		
-		sl_contentPane.putConstraint(SpringLayout.NORTH, lblconsole, 5, SpringLayout.SOUTH, scrollPane); //top lblconsole
-		sl_contentPane.putConstraint(SpringLayout.WEST, lblconsole, 10, SpringLayout.WEST, contentPane); //left lblconsole
-		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane_1, 5, SpringLayout.SOUTH, lblconsole); //top Console
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane_1, -10, SpringLayout.SOUTH, contentPane); //bottom console
-		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane_1, 10, SpringLayout.WEST, contentPane); //left console
-		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane_1, -10, SpringLayout.EAST, contentPane); //right console
-		
-		sl_contentPane.putConstraint(SpringLayout.NORTH, textScrollPane, 30, SpringLayout.NORTH, contentPane);	//top editor
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, textScrollPane, -5, SpringLayout.NORTH, lblconsole);	//bot editor
-		sl_contentPane.putConstraint(SpringLayout.WEST, textScrollPane, 10, SpringLayout.EAST, scrollPane);	//left editor
-		sl_contentPane.putConstraint(SpringLayout.EAST, textScrollPane, -10, SpringLayout.EAST, contentPane); //right editor
-		sl_contentPane.putConstraint(SpringLayout.WEST, this.label, 0, SpringLayout.WEST, textScrollPane);	//left FileName Label
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.label, -5, SpringLayout.NORTH, textScrollPane); //bot FileName Label
-		sl_contentPane.putConstraint(SpringLayout.EAST, lblNewLabel, 0, SpringLayout.EAST, textScrollPane);	//right +TextSize Label
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblNewLabel, -5, SpringLayout.NORTH, textScrollPane); //bot +TextSize Label
-		sl_contentPane.putConstraint(SpringLayout.EAST, lblNewLabel_1, -30, SpringLayout.WEST, lblNewLabel);	//right -TextSize Label
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblNewLabel_1, -5, SpringLayout.NORTH, textScrollPane); //bot -TextSize Label
-		
-		//------------
-		
-		//CreatingObjects
+		this.width = (int) screenSize.getWidth();
+		this.factx = width / 1024.f;
+		this.heigth = (int) screenSize.getHeight();
+		this.facty = heigth / 768.f;
+		this.frame.setBounds(0, 0, (int) (width * 0.5), (int) (heigth * 0.5));
+		// -----------
+
+		// Cointainers Properties
+		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane, 30, SpringLayout.NORTH, contentPane); // top
+																											// browser
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane, (int) facty * -170, SpringLayout.SOUTH,
+				contentPane); // bottom Browser
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane, 10, SpringLayout.WEST, contentPane); // left
+																											// browser
+		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane, (int) factx * 200, SpringLayout.WEST, contentPane); // right
+																														// browser
+		sl_contentPane.putConstraint(SpringLayout.WEST, this.browserLabel, 0, SpringLayout.WEST, scrollPane); // left
+																												// WSName
+																												// Label
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.browserLabel, -5, SpringLayout.NORTH, scrollPane); // bot
+																													// WSName
+																													// Label
+
+		sl_contentPane.putConstraint(SpringLayout.NORTH, lblconsole, 5, SpringLayout.SOUTH, scrollPane); // top
+																											// lblconsole
+		sl_contentPane.putConstraint(SpringLayout.WEST, lblconsole, 10, SpringLayout.WEST, contentPane); // left
+																											// lblconsole
+		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane_1, 5, SpringLayout.SOUTH, lblconsole); // top
+																											// Console
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane_1, -10, SpringLayout.SOUTH, contentPane); // bottom
+																												// console
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane_1, 10, SpringLayout.WEST, contentPane); // left
+																											// console
+		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane_1, -10, SpringLayout.EAST, contentPane); // right
+																											// console
+
+		sl_contentPane.putConstraint(SpringLayout.NORTH, textScrollPane, 30, SpringLayout.NORTH, contentPane); // top
+																												// editor
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, textScrollPane, -5, SpringLayout.NORTH, lblconsole); // bot
+																												// editor
+		sl_contentPane.putConstraint(SpringLayout.WEST, textScrollPane, 10, SpringLayout.EAST, scrollPane); // left
+																											// editor
+		sl_contentPane.putConstraint(SpringLayout.EAST, textScrollPane, -10, SpringLayout.EAST, contentPane); // right
+																												// editor
+		sl_contentPane.putConstraint(SpringLayout.WEST, this.label, 0, SpringLayout.WEST, textScrollPane); // left
+																											// FileName
+																											// Label
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.label, -5, SpringLayout.NORTH, textScrollPane); // bot
+																												// FileName
+																												// Label
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblNewLabel, 0, SpringLayout.EAST, textScrollPane); // right
+																											// +TextSize
+																											// Label
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblNewLabel, -5, SpringLayout.NORTH, textScrollPane); // bot
+																												// +TextSize
+																												// Label
+		sl_contentPane.putConstraint(SpringLayout.EAST, lblNewLabel_1, -30, SpringLayout.WEST, lblNewLabel); // right
+																												// -TextSize
+																												// Label
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, lblNewLabel_1, -5, SpringLayout.NORTH, textScrollPane); // bot
+																													// -TextSize
+																													// Label
+
+		// ------------
+
+		// CreatingObjects
 		makeMenu();
 		this.editor = new Editor(this);
 		this.console = new Console(this);
 		this.browser = new Browser(this);
-		this.newPj = new NewPj(this,false);
-		this.newFile = new NewFile(this);
-		//-------------------
+		// this.newPj = new NewPj(this,false);
 
-		//Adding Containers
+		this.newFile = new NewFile(this);
+		// -------------------
+
+		// Adding Containers
 		contentPane.add(scrollPane);
 		contentPane.add(scrollPane_1);
 		contentPane.add(textScrollPane);
@@ -168,82 +202,82 @@ public class MainWin{
 		contentPane.add(lblconsole);
 		contentPane.add(lblNewLabel);
 		contentPane.add(lblNewLabel_1);
-		//------------
-		
+		// ------------
+
 		frame.setVisible(true);
 	}
 
 	public void makeMenu() {
-		//MENUBAR
+		// MENUBAR
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-		
+
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
-		
+
 		JMenu mnNew = new JMenu("New");
 		mnFile.add(mnNew);
-		
+
 		JMenu mnFile_1 = new JMenu("File");
 		mnNew.add(mnFile_1);
-		
+
 		JMenuItem mntmcFile = new JMenuItem(".C File");
 		mntmcFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				File fft = browser.getFileFromTree();
-		        if (fft.getName().equals("source")) {
-				newFile.ext = "c";
-				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				newFile.setVisible(true);
-		        }else{
-		        	new MessageBox("New .c files must be placed in \"source\" folder.", "info");
-		        }  
+				if (fft.getName().equals("source")) {
+					newFile.ext = "c";
+					newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					newFile.setVisible(true);
+				} else {
+					new MessageBox("New .c files must be placed in \"source\" folder.", "info");
+				}
 			}
 		});
 		mntmcFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.ALT_MASK));
 		mnFile_1.add(mntmcFile);
-		
+
 		JMenuItem mntmsFile = new JMenuItem(".S File");
 		mntmsFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.ALT_MASK));
 		mntmsFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				File fft = browser.getFileFromTree();
-		        if (fft.getName().equals("source")) {
-				newFile.ext = "s";
-				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				newFile.setVisible(true);
-		        } else {
-		        	new MessageBox("New .s files must be placed in \"source\" folder.", "info");
-		        }
+				if (fft.getName().equals("source")) {
+					newFile.ext = "s";
+					newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					newFile.setVisible(true);
+				} else {
+					new MessageBox("New .s files must be placed in \"source\" folder.", "info");
+				}
 			}
 		});
 		mnFile_1.add(mntmsFile);
-		
+
 		JMenuItem mntmhFile = new JMenuItem(".H File");
 		mntmhFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.ALT_MASK));
 		mntmhFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				File fft = browser.getFileFromTree();
-		        if (fft.getName().equals("include")) {
-				newFile.ext = "h";
-				newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				newFile.setVisible(true);
-		        } else {
-		        	new MessageBox("New .h files must be placed in \"include\" folder.", "info");
-		        }
+				if (fft.getName().equals("include")) {
+					newFile.ext = "h";
+					newFile.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					newFile.setVisible(true);
+				} else {
+					new MessageBox("New .h files must be placed in \"include\" folder.", "info");
+				}
 			}
 		});
 		mnFile_1.add(mntmhFile);
-		
+
 		JMenuItem mntmProject = new JMenuItem("Project");
 		mntmProject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				newPj.buildWindow(true);
+				configManager.newPj();
 			}
 		});
 		mntmProject.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
 		mnNew.add(mntmProject);
-		
+
 		JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -252,53 +286,54 @@ public class MainWin{
 		});
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 		mnFile.add(mntmSave);
-		
+
 		JMenu mnCompile_1 = new JMenu("Compile");
 		mnFile.add(mnCompile_1);
-		
+
 		JMenuItem mntmCompile = new JMenuItem("Compile");
 		mntmCompile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 		mntmCompile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (editor.opened == null) {
-					new MessageBox("Please open the file in \"source\" folder that you want to compile and run", "error");
+					new MessageBox("Please open the file in \"source\" folder that you want to compile and run",
+							"error");
 				}
 				// if this is not a makefile
 				try {
-				if (!editor.opened.getName().equals("Makefile")) {
-					console.compile(editor.opened.getParentFile().getParent(), false);
-				} else {
-					new MessageBox("Please open the file in \"source\" folder that you want to compile.", "error");
-				}
-				}
-				catch (NullPointerException e1) {
+					if (!editor.opened.getName().equals("Makefile")) {
+						console.compile(editor.opened.getParentFile().getParent(), false);
+					} else {
+						new MessageBox("Please open the file in \"source\" folder that you want to compile.", "error");
+					}
+				} catch (NullPointerException e1) {
 				}
 			}
 		});
 		mnCompile_1.add(mntmCompile);
-		
+
 		JMenuItem mntmCompileRun = new JMenuItem("Compile & Run");
 		mntmCompileRun.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0));
 		mntmCompileRun.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (editor.opened == null) {
-					new MessageBox("Please open the file in \"source\" folder that you want to compile and run", "error");
+					new MessageBox("Please open the file in \"source\" folder that you want to compile and run",
+							"error");
 				}
 				// Fait un make et run
 				if (!editor.opened.getName().equals("Makefile")) {
 					console.compile(editor.opened.getParentFile().getParent(), true);
 				} else {
-					new MessageBox("Please open the file in \"source\" folder that you want to compile and run", "error");
+					new MessageBox("Please open the file in \"source\" folder that you want to compile and run",
+							"error");
 				}
 			}
 		});
 		mnCompile_1.add(mntmCompileRun);
-		
-		
-		//Edit Menu
+
+		// Edit Menu
 		JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
-		
+
 		JMenuItem mntmClearConsole = new JMenuItem("Clear Console");
 		mntmClearConsole.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -306,7 +341,7 @@ public class MainWin{
 			}
 		});
 		mnEdit.add(mntmClearConsole);
-		
+
 		JMenuItem mntmRefreshBrowser = new JMenuItem("Refresh Browser");
 		mntmRefreshBrowser.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
 		mntmRefreshBrowser.addActionListener(new ActionListener() {
@@ -315,18 +350,18 @@ public class MainWin{
 			}
 		});
 		mnEdit.add(mntmRefreshBrowser);
-		
-		JMenuItem mntmChangeWorkspace = new JMenuItem("Change Workspace");
+
+		JMenuItem mntmChangeWorkspace = new JMenuItem("Change default settings");
 		mntmChangeWorkspace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rebuildWorkspace();
 			}
 		});
 		mnEdit.add(mntmChangeWorkspace);
-		//Info Menu
+		// Info Menu
 		JMenu mnCompile = new JMenu("Info");
 		menuBar.add(mnCompile);
-		
+
 		JMenuItem mntmCredits = new JMenuItem("Credits");
 		mntmCredits.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -334,15 +369,15 @@ public class MainWin{
 			}
 		});
 		mnCompile.add(mntmCredits);
-		//---MENUBAR---
-		
-		//POPUPMENU
+		// ---MENUBAR---
+
+		// POPUPMENU
 		JMenu mnNew1 = new JMenu("New...");
 		popupMenu.add(mnNew1);
-		
+
 		JMenu mnFile_11 = new JMenu("File...");
 		mnNew1.add(mnFile_11);
-		
+
 		JMenuItem mntmcFile_1 = new JMenuItem(".C File");
 		mntmcFile_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -352,7 +387,7 @@ public class MainWin{
 			}
 		});
 		mnFile_11.add(mntmcFile_1);
-		
+
 		JMenuItem mntmcFile_3 = new JMenuItem(".H File");
 		mntmcFile_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -362,7 +397,7 @@ public class MainWin{
 			}
 		});
 		mnFile_11.add(mntmcFile_3);
-		
+
 		JMenuItem mntmsFile_1 = new JMenuItem(".S File");
 		mntmsFile_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -372,40 +407,61 @@ public class MainWin{
 			}
 		});
 		mnFile_11.add(mntmsFile_1);
-		
+
 		JMenuItem mntmProject_1 = new JMenuItem("Project");
 		mntmProject_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				newPj.buildWindow(true);
+				configManager.newPj();
 			}
 		});
 		mnNew1.add(mntmProject_1);
-		
+
 		JMenuItem mntmDelete = new JMenuItem("Delete");
 		mntmDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				File tobdeleted = browser.getFileFromTree();
 				boolean cond = tobdeleted.equals(pathFromFile);
-				if(cond){
+				if (cond) {
 					new MessageBox("Cannot delete the workspace.", "error");
-				}else {
+				} else {
 					new DeleteDirectory(tobdeleted);
-					refreshBrowser();	
+					refreshBrowser();
 				}
-				
+
 			}
 		});
 		popupMenu.add(mntmDelete);
-		//---POPUPMENU
+		// ---POPUPMENU
 	}
 
-	// Mis a jour du workspace et de l interface
+	// NEW DEFAULT SETTINGS
 	public void rebuildWorkspace() {
-		this.pathFromFile = this.settings.getPath();
-		this.settingsManager.generateWorkspace(pathFromFile);
-		this.editor.refresh();
+		String oldWs = configManager.getOption(Options.OPTION_PATH);
+		this.configManager.changeWs();
+		System.out.println("Sono Tornato in rebuildworkspace");
+		
+		//pathFromFile = new File(configManager.getOption(Options.OPTION_PATH)); // TODO
+																				// dobbiamo
+																				// fare
+																				// in
+																				// modo
+																				// che
+																				// pathfromfile
+																				// non
+																				// esista
+																				// più
+																				// e
+																				// che
+																				// si
+																				// utilizzi
+																				// soltanto
+																				// getOptions(Options.Option_PATH)
+		this.pathFromFile = new File(configManager.getOption(Options.OPTION_PATH));
 		this.refreshBrowser();
+		this.editor.refresh(oldWs);
+
 	}
+	
 	// Mise a jour de la gueule du browser
 	public void refreshBrowser() {
 		TreeState ts = new TreeState(this.browser.fileTree);
@@ -415,6 +471,7 @@ public class MainWin{
 		ts.setExpansionState(es);
 		this.scrollPane.getViewport().setView(this.browser.fileTree);
 	}
+
 	private static void addPopup(java.awt.Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -422,14 +479,17 @@ public class MainWin{
 					showMenu(e);
 				}
 			}
+
 			public void mouseReleased(MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					showMenu(e);
 				}
 			}
+
 			private void showMenu(MouseEvent e) {
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		});
 	}
+	
 }
